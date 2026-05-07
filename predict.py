@@ -4,7 +4,7 @@ import numpy as np
 from pipeline import clean_text, extract_stylometric_features
 
 # Load FULL pipeline (scaler + model)
-pipe = joblib.load("bkp/model_pipeline.joblib")
+pipe = joblib.load("model_pipeline.joblib")
 
 
 def predict(text):
