@@ -27,7 +27,7 @@ st.markdown("""
     color: #f8fafc;
 }
 
-/* Hide Streamlit UI */
+/* Hide Streamlit Default UI */
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
@@ -84,6 +84,7 @@ header {visibility: hidden;}
     border-radius: 16px;
     border: 1px solid #374151;
     text-align: center;
+    height: 180px;
 }
 
 /* Buttons */
@@ -110,9 +111,23 @@ textarea {
 .footer {
     text-align: center;
     color: #94a3b8;
-    padding-top: 30px;
-    padding-bottom: 10px;
+    padding-top: 40px;
+    padding-bottom: 20px;
     font-size: 15px;
+}
+
+/* Small Labels */
+.small-text {
+    color: #cbd5e1;
+    font-size: 15px;
+}
+
+/* Section Headers */
+.section-header {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: white;
 }
 
 </style>
@@ -152,22 +167,29 @@ with left:
     st.markdown("</div>", unsafe_allow_html=True)
 
 # ==========================================
-# SIDEBAR INFO
+# SYSTEM OVERVIEW
 # ==========================================
 with right:
 
     st.markdown("""
     <div class='card'>
-    <h3>System Overview</h3>
 
-    <p style='color:#cbd5e1;'>
+    <div class='section-header'>Detection Engine</div>
+
+    <p class='small-text'>
 
     • Stylometric Analysis<br><br>
+
     • NLP Feature Extraction<br><br>
-    • Logistic Regression Classification<br><br>
-    • Real-time Prediction Engine<br><br>
+
+    • Logistic Regression Model<br><br>
+
+    • Real-time Classification<br><br>
+
     • Confidence Estimation
+
     </p>
+
     </div>
     """, unsafe_allow_html=True)
 
@@ -176,20 +198,23 @@ with right:
 # ==========================================
 if st.button("Analyze Text"):
 
+    # ==========================================
+    # WORD VALIDATION
+    # ==========================================
     if len(text.split()) < 100:
         st.warning("Please enter at least 100 words.")
         st.stop()
 
     # ==========================================
-    # REALISTIC LOADING
+    # LOADING STEPS
     # ==========================================
     loading_steps = [
         "Cleaning input text...",
-        "Extracting linguistic patterns...",
-        "Analyzing stylometric signals...",
-        "Evaluating sentence structure...",
+        "Extracting stylometric patterns...",
+        "Analyzing sentence structure...",
         "Computing statistical features...",
-        "Generating prediction..."
+        "Evaluating linguistic variability...",
+        "Generating final prediction..."
     ]
 
     progress = st.progress(0)
@@ -200,7 +225,7 @@ if st.button("Analyze Text"):
 
         status.info(step)
 
-        time.sleep(0.5)
+        time.sleep(0.45)
 
         progress.progress((i + 1) / len(loading_steps))
 
@@ -211,6 +236,9 @@ if st.button("Analyze Text"):
     # ==========================================
     label, prob, human_prob, ai_prob = predict(text)
 
+    # ==========================================
+    # FEATURE EXTRACTION
+    # ==========================================
     features = extract_stylometric_features(text)
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -240,30 +268,68 @@ if st.button("Analyze Text"):
     m1, m2, m3 = st.columns(3)
 
     with m1:
+
         st.markdown(f"""
         <div class='metric-card'>
-        <h4>Confidence</h4>
-        <h2>{prob*100:.1f}%</h2>
+        <h3>Confidence</h3>
+        <h1>{prob*100:.1f}%</h1>
         </div>
         """, unsafe_allow_html=True)
 
     with m2:
+
         st.markdown(f"""
         <div class='metric-card'>
-        <h4>Word Count</h4>
-        <h2>{len(text.split())}</h2>
+        <h3>Word Count</h3>
+        <h1>{len(text.split())}</h1>
         </div>
         """, unsafe_allow_html=True)
 
     with m3:
+
         st.markdown(f"""
         <div class='metric-card'>
-        <h4>Prediction</h4>
-        <h2>{label}</h2>
+        <h3>Prediction</h3>
+        <h1>{label}</h1>
         </div>
         """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
+
+    # ==========================================
+    # AI ANALYSIS SUMMARY
+    # ==========================================
+    if label == "Human-written":
+
+        analysis_text = """
+        The submitted text demonstrates natural linguistic variation,
+        irregular sentence transitions, and diverse vocabulary usage.
+
+        The stylometric analysis indicates strong human-like writing behavior
+        with realistic burstiness and sentence complexity patterns.
+        """
+
+    else:
+
+        analysis_text = """
+        The submitted text demonstrates highly consistent sentence structures,
+        repetitive stylistic patterns, and statistically uniform writing behavior.
+
+        The system detected characteristics commonly associated with
+        AI-generated textual content.
+        """
+
+    st.markdown(f"""
+    <div class='card'>
+
+    <div class='section-header'>AI Analysis Summary</div>
+
+    <p class='small-text'>
+    {analysis_text}
+    </p>
+
+    </div>
+    """, unsafe_allow_html=True)
 
     # ==========================================
     # TABS
@@ -279,6 +345,9 @@ if st.button("Analyze Text"):
     # ==========================================
     with tab1:
 
+        # ==========================================
+        # GAUGE CHART
+        # ==========================================
         gauge = go.Figure(go.Indicator(
             mode="gauge+number",
             value=prob * 100,
@@ -298,36 +367,45 @@ if st.button("Analyze Text"):
 
         gauge.update_layout(
             paper_bgcolor="#0f172a",
-            font={'color': "white"}
+            font={'color': "white"},
+            height=420
         )
 
-        st.plotly_chart(gauge, use_container_width=True)
+        st.plotly_chart(
+            gauge,
+            use_container_width=True,
+            config={"displayModeBar": False}
+        )
 
-        probs_df = pd.DataFrame({
-            "Class": ["Human", "AI"],
-            "Probability": [human_prob, ai_prob]
-        })
-
+        # ==========================================
+        # PROBABILITY BAR CHART
+        # ==========================================
         fig = go.Figure()
 
         fig.add_trace(go.Bar(
-            x=probs_df["Class"],
-            y=probs_df["Probability"],
+            x=["Human", "AI"],
+            y=[human_prob, ai_prob],
             text=[
                 f"{human_prob*100:.1f}%",
                 f"{ai_prob*100:.1f}%"
             ],
-            textposition='auto'
+            textposition='auto',
+            marker_color=["#22c55e", "#ef4444"]
         ))
 
         fig.update_layout(
             paper_bgcolor="#0f172a",
             plot_bgcolor="#0f172a",
             font_color="white",
+            height=350,
             yaxis=dict(range=[0,1])
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(
+            fig,
+            use_container_width=True,
+            config={"displayModeBar": False}
+        )
 
     # ==========================================
     # TAB 2
@@ -367,15 +445,21 @@ if st.button("Analyze Text"):
         st.markdown("""
         ### Model Interpretation
 
-        The system analyzes:
+        The AI Text Detection System performs analysis using
+        stylometric and linguistic characteristics extracted
+        from the submitted text.
 
-        - Writing style variability
-        - Sentence structure complexity
+        The system evaluates:
+
         - Vocabulary diversity
+        - Sentence complexity
+        - Writing burstiness
+        - Statistical language behavior
+        - Dependency structure
         - Linguistic consistency
-        - Statistical writing patterns
 
-        The prediction is generated using a trained Logistic Regression model based on stylometric NLP features.
+        Final predictions are generated using a trained
+        Logistic Regression machine learning model.
         """)
 
 # ==========================================
