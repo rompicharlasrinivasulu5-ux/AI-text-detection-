@@ -13,8 +13,8 @@ from nltk.corpus import stopwords
 
 import spacy
 
-from transformers import BertTokenizer, BertModel
-import torch
+#from transformers import BertTokenizer, BertModel
+#import torch
 
 # ===============================
 # DOWNLOAD NLTK RESOURCES
@@ -33,9 +33,9 @@ nlp = spacy.load("en_core_web_sm")
 stop_words = set(stopwords.words('english'))
 
 # BERT
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-bert_model = BertModel.from_pretrained('bert-base-uncased')
-bert_model.eval()
+#tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+#bert_model = BertModel.from_pretrained('bert-base-uncased')
+#bert_model.eval()
 
 # ===============================
 # GLOBAL WORD PROBABILITY
@@ -160,17 +160,17 @@ def extract_stylometric_features(text):
 # # ===============================
 
 
-def get_bert_embedding(text):
-    inputs = tokenizer(
-        text,
-        return_tensors='pt',
-        truncation=True,
-        padding=True,
-        max_length=512
-    )
-
-    with torch.no_grad():
-        outputs = bert_model(**inputs)
-
-    cls_embedding = outputs.last_hidden_state[:, 0, :]
-    return cls_embedding.squeeze().numpy()
+#def get_bert_embedding(text):
+#    inputs = tokenizer(
+#        text,
+#        return_tensors='pt',
+#        truncation=True,
+#        padding=True,
+#        max_length=512
+#    )
+#
+#    with torch.no_grad():
+#        outputs = bert_model(**inputs)
+#
+#   cls_embedding = outputs.last_hidden_state[:, 0, :]
+#return cls_embedding.squeeze().numpy()
