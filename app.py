@@ -209,7 +209,7 @@ if st.button("Analyze Text"):
     # ==========================================
     # PREDICTION
     # ==========================================
-    label, prob = predict(text)
+    label, prob, human_prob, ai_prob = predict(text)
 
     features = extract_stylometric_features(text)
 
@@ -305,7 +305,7 @@ if st.button("Analyze Text"):
 
         probs_df = pd.DataFrame({
             "Class": ["Human", "AI"],
-            "Probability": [1 - prob, prob]
+            "Probability": [human_prob, ai_prob]
         })
 
         fig = go.Figure()
@@ -314,8 +314,8 @@ if st.button("Analyze Text"):
             x=probs_df["Class"],
             y=probs_df["Probability"],
             text=[
-                f"{(1-prob)*100:.1f}%",
-                f"{prob*100:.1f}%"
+                f"{human_prob*100:.1f}%",
+                f"{ai_prob*100:.1f}%"
             ],
             textposition='auto'
         ))
