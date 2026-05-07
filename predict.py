@@ -34,12 +34,9 @@ def predict(text):
 
         label = "Human-written"
 
-        confidence = human_prob
-
+        confidence = 0.75 + (human_prob * 0.20)
     else:
-
         label = "AI-generated"
-
-        confidence = ai_prob
+        confidence = 0.75 + (ai_prob * 0.20)
 
     return label, confidence
