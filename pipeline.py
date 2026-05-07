@@ -40,7 +40,7 @@ stop_words = set(stopwords.words('english'))
 # ===============================
 # GLOBAL WORD PROBABILITY
 # ===============================
-df_temp = pd.read_csv("data/processed_data.csv")
+#df_temp = pd.read_csv("data/processed_data.csv")
 
 all_words = []
 
