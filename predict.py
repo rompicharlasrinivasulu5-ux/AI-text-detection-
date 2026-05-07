@@ -2,7 +2,7 @@ import joblib
 from pipeline import clean_text, extract_stylometric_features
 
 # =====================================
-# LOAD PIPELINE MODEL
+# LOAD MODEL
 # =====================================
 model_pipeline = joblib.load("model_pipeline.joblib")
 
@@ -17,26 +17,32 @@ def predict(text):
     # Extract features
     stylo = extract_stylometric_features(text_clean).reshape(1, -1)
 
-    # Predict
+    # Prediction
     prediction = model_pipeline.predict(stylo)[0]
 
-    # Probabilities
+    # Raw probabilities
     probs = model_pipeline.predict_proba(stylo)[0]
 
-    # Human probability
-    human_prob = probs[0]
+    # Original probabilities
+    human_prob_raw = probs[0]
+    ai_prob_raw = probs[1]
 
-    # AI probability
-    ai_prob = probs[1]
-
-    # Final label + confidence
+    # Confidence smoothing
     if prediction == 0:
 
         label = "Human-written"
 
-        confidence = 0.75 + (human_prob * 0.20)
-    else:
-        label = "AI-generated"
-        confidence = 0.75 + (ai_prob * 0.20)
+        confidence = 0.75 + (human_prob_raw * 0.20)
 
-    return label, confidence
+    else:
+
+        label = "AI-generated"
+
+        confidence = 0.75 + (ai_prob_raw * 0.20)
+
+    return (
+        label,
+        confidence,
+        human_prob_raw,
+        ai_prob_raw
+    )
